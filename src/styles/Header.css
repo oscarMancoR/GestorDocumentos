@@ -1,0 +1,57 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #004080; /* Color institucional */
+    color: white;
+    padding: 10px 20px;
+    height: 130px; /* Altura fija del banner */
+    position: relative;
+  }
+  
+  .logo {
+    height: 100px; /* Mantiene el logo dentro del banner */
+    width: auto;
+  }
+  
+  .header-content {
+    display: flex;
+    align-items: center;
+  }
+  
+  .header-info {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin-left: 10px; /* Espacio entre el logo y el texto */
+    line-height: 1.2; /* Reduce el espacio vertical entre líneas */
+  }
+  
+  .header-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0; /* Elimina márgenes adicionales */
+  }
+  
+  .header-subtitle {
+    font-size: 14px;
+    margin: 0; /* Elimina márgenes adicionales */
+  }
+  
+  .header-photo {
+    height: 100px; /* Tamaño de la foto */
+    width: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  
+  /* Estilos para "Gestor Documental" */
+  .header-center {
+    position: absolute;
+    top:40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 30px;
+    font-weight: bold;
+  }

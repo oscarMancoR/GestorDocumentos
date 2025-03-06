@@ -1,0 +1,79 @@
+.principal-container {
+    text-align: left;
+    margin-left: 20px;
+    font-size: 16px;
+}
+
+/* Estilos del checkbox */
+.checkBox-container {
+    display: flex;
+    align-items: center;
+    margin-top: 15px;
+}
+  
+.checkBox-container input {
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+}
+  
+.checkBox-container label {
+    font-size: 15px;
+    cursor: pointer;
+}
+
+/* Contenedor de documentos */
+.document-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* Columnas en pantallas grandes */
+.column {
+    flex: 1;
+    min-width: 300px; /* Asegura que las columnas no sean demasiado pequeñas */
+}
+
+/* Estilos para cada documento */
+.document-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+}
+
+/* Nombre del documento */
+.document-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+/* Botón de adjuntar */
+.upload-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.upload-button:hover {
+    background-color: #0056b3;
+}
+
+/* Diseño responsivo: en móviles, una sola columna */
+@media (max-width: 768px) {
+    .document-container {
+        flex-direction: column;
+    }
+}
