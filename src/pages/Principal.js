@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+/*import React, { useState, useEffect } from "react";
 import "../styles/principal.css";
 
 const Principal = () => {
-  const [isChecked, setIsChecked] = useState(false); // Estado para el checkbox
-  const [documentos, setDocumentos] = useState([]); // Estado para almacenar documentos
 
-  // Simulación de carga de documentos desde Dataverse
+  const [isChecked, setIsChecked] = useState(false);
+  const [documentos, setDocumentos] = useState([]);
+ 
   useEffect(() => {
     const documentosEjemplo = [
       "Cédula de Identidad",
@@ -35,12 +35,14 @@ const Principal = () => {
   return (
     <div className="principal-container">
       <p>
-        Bienvenido xxxxx, te invitamos a adjuntar todos los documentos requeridos para 
+        Bienvenido xxx, te invitamos a adjuntar todos los documentos requeridos para 
         continuar con tu proceso dentro de la institución.
       </p>
 
-      {/* Checkbox para aceptar el tratamiento de datos */}
-      <div className="checkBox-container">
+     
+
+   
+      /*<div className="checkBox-container">
         <input 
           type="checkbox"
           id="aceptarDatos"
@@ -52,8 +54,8 @@ const Principal = () => {
         </label>                       
       </div>   
 
-      {/* Contenedor de documentos en dos columnas */}
-      <div className="document-container">
+    
+     /* <div className="document-container">
         <div className="column">
           {columna1.map((doc, index) => (
             <div key={index} className="document-item">
@@ -72,6 +74,42 @@ const Principal = () => {
         </div>
       </div>
     </div>       
+  );
+};
+
+export default Principal;*/
+
+import React, { useState, useEffect } from "react";
+import "../styles/principal.css";
+
+const Principal = ({ postulante }) => {
+  const [documentos, setDocumentos] = useState([]);
+
+  useEffect(() => {
+    if (postulante && postulante.documentos && postulante.documentos.body) {
+      setDocumentos(postulante.documentos.body);
+    }
+  }, [postulante]);
+
+  return (
+    <div className="principal-container">
+      <h2>Bienvenido, {postulante?.nombre || "Postulante"}</h2>
+      <p>Correo: {postulante?.correo || "No disponible"}</p>
+      <p>Adjunte los siguientes documentos requeridos:</p>
+
+      <div className="document-container">
+        {documentos.length > 0 ? (
+          documentos.map((doc, index) => (
+            <div key={index} className="document-item">
+              <span className="document-name">{doc.nombreDocumento}</span>
+              <button className="upload-button">Adjuntar</button>
+            </div>
+          ))
+        ) : (
+          <p>No hay documentos requeridos.</p>
+        )}
+      </div>
+    </div>
   );
 };
 
