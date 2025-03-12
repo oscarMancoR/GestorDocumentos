@@ -1,90 +1,13 @@
-/*import React, { useState, useEffect } from "react";
-import "../styles/principal.css";
 
-const Principal = () => {
-
-  const [isChecked, setIsChecked] = useState(false);
-  const [documentos, setDocumentos] = useState([]);
- 
-  useEffect(() => {
-    const documentosEjemplo = [
-      "Cédula de Identidad",
-      "Certificado Médico",
-      "RUT",
-      "Hoja de Vida",
-      "Antecedentes Disciplinarios",
-      "Registro de Vacunación",
-      "Certificado de Estudios",
-      "Contrato Firmado",
-      "Referencias Laborales",
-      "Formulario de Postulación",
-    ];
-    setDocumentos(documentosEjemplo);
-  }, []);
-
-  // Manejo del cambio en el checkbox
-  const handledCheckboxChange = () => {
-    setIsChecked(!isChecked);
-  };
-
-  // Dividir documentos en dos columnas equilibradas
-  const mitad = Math.ceil(documentos.length / 2);
-  const columna1 = documentos.slice(0, mitad);
-  const columna2 = documentos.slice(mitad);
-
-  return (
-    <div className="principal-container">
-      <p>
-        Bienvenido xxx, te invitamos a adjuntar todos los documentos requeridos para 
-        continuar con tu proceso dentro de la institución.
-      </p>
-
-     
-
-   
-      /*<div className="checkBox-container">
-        <input 
-          type="checkbox"
-          id="aceptarDatos"
-          checked={isChecked}
-          onChange={handledCheckboxChange}
-        />  
-        <label htmlFor="aceptarDatos">
-          Acepto el tratamiento de mis datos personales conforme a la política de privacidad.
-        </label>                       
-      </div>   
-
-    
-     /* <div className="document-container">
-        <div className="column">
-          {columna1.map((doc, index) => (
-            <div key={index} className="document-item">
-              <span className="document-name">{doc}</span>
-              <button className="upload-button">Adjuntar</button>
-            </div>
-          ))}
-        </div>
-        <div className="column">
-          {columna2.map((doc, index) => (
-            <div key={index} className="document-item">
-              <span className="document-name">{doc}</span>
-              <button className="upload-button">Adjuntar</button>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>       
-  );
-};
-
-export default Principal;*/
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "../styles/principal.css";
 import FileService from "../components/FileUploader";
 
 const Principal = ({ postulante }) => {
   const [documentos, setDocumentos] = useState([]);
   const [archivosAdjuntos, setArchivosAdjuntos] = useState({});
+  const [archivosBase64, setArchivosBase64] = useState({});
 
   useEffect(() => {
     if (postulante?.documentos?.body) {
@@ -102,15 +25,20 @@ const Principal = ({ postulante }) => {
 
       if (file) {
         try {
-          await FileService.saveFile(documentName, file);
+          const base64 = await toBase64(file);
+          setArchivosBase64((prevState) => ({
+            ...prevState,
+            [index]: { nombreDocumento: file.name, contenidoBase64: base64 }
+          }));
+
           setArchivosAdjuntos((prevState) => ({
             ...prevState,
-            [index]: "success", // Éxito en la carga
+            [index]: "success"
           }));
         } catch (error) {
           setArchivosAdjuntos((prevState) => ({
             ...prevState,
-            [index]: "error", // Error en la carga
+            [index]: "error"
           }));
         }
       }
@@ -119,8 +47,40 @@ const Principal = ({ postulante }) => {
     input.click();
   };
 
+  const toBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result.split(",")[1]); // Eliminar el prefijo 'data:application/pdf;base64,'
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  const handleEnviar = async () => {
+    if (!postulante) return;
+
+    const payload = {
+      idPostulante: postulante.id || "ID_NO_DISPONIBLE",
+      nombrePostulante: postulante.nombre || "NOMBRE_NO_DISPONIBLE",
+      documentos: Object.values(archivosBase64)
+    };
+
+    try {
+      const response = await axios.post(
+        "https://prod-03.brazilsouth.logic.azure.com:443/workflows/53bbfdc7e23b47aeb192e1953a293db4/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=NBENSTHDHtcxsIIEPMuDXraLnGjGq1yUy4ACGi6KdtM",
+        payload,
+        { headers: { "Content-Type": "application/json" } }
+      );
+      console.log("✅ Enviado con éxito:", response.data);
+      alert("Documentos enviados correctamente.");
+    } catch (error) {
+      console.error("❌ Error al enviar:", error);
+      alert("Hubo un error al enviar los documentos.");
+    }
+  };
+
   // Verificar si todos los documentos están adjuntados correctamente
-  const isReadyToSend = documentos.length > 0 && 
+  const isReadyToSend = documentos.length > 0 &&
     documentos.every((_, index) => archivosAdjuntos[index] === "success");
 
   return (
@@ -147,7 +107,7 @@ const Principal = ({ postulante }) => {
 
                 {/* Espacio para el icono de estado */}
                 <span className="status-icon">
-                  {archivosAdjuntos[index] === "success" ? "✔️" : archivosAdjuntos[index] === "error" ? "❌" : ""}
+                  {archivosAdjuntos[index] === "success" ? "✅" : archivosAdjuntos[index] === "error" ? "❌" : ""}
                 </span>
               </div>
             </div>
@@ -159,7 +119,7 @@ const Principal = ({ postulante }) => {
 
       {/* Botón enviar */}
       <div className="enviar-container">
-        <button className="enviar-button" disabled={!isReadyToSend}>
+        <button className="enviar-button" disabled={!isReadyToSend} onClick={handleEnviar}>
           Enviar
         </button>
       </div>
@@ -168,4 +128,3 @@ const Principal = ({ postulante }) => {
 };
 
 export default Principal;
-
