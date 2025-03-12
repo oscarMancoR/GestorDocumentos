@@ -83,3 +83,61 @@
   .checkbox-container input {
     margin-right: 5px;
   } 
+  /* Contenedor para botón y estado */
+.boton-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espacio entre el botón y el icono */
+  }
+  
+  /* Icono de estado de carga */
+  .status-icon {
+    font-size: 20px;
+    font-weight: bold;
+    margin-left: 5px;
+  }
+  
+  /* ✔️ Ícono verde cuando la carga es exitosa */
+.status-icon.success {
+    color: #28a745 !important; /* Verde correcto */
+    font-size: 20px;
+    margin-left: 10px;
+  }
+  
+ /* ✔️ Ícono verde cuando la carga es exitosa */
+.status-icon.success {
+    color: #28a745 !important; /* Verde */
+    font-size: 20px;
+    margin-left: 10px;
+  }
+  
+  /* ❌ Ícono rojo cuando hay error en la carga */
+  .status-icon.error {
+    color: #dc3545 !important; /* Rojo */
+    font-size: 20px;
+    margin-left: 10px;
+  }
+  
+  /* Contenedor del botón enviar */
+  .enviar-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+  
+  /* Estilo del botón enviar */
+  .enviar-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  /* Botón desactivado */
+  .enviar-button:disabled {
+    background-color: gray;
+    cursor: not-allowed;
+  }

@@ -80,11 +80,11 @@ const Principal = () => {
 export default Principal;*/
 import React, { useState, useEffect } from "react";
 import "../styles/principal.css";
+import FileService from "../components/FileUploader";
 
 const Principal = ({ postulante }) => {
   const [documentos, setDocumentos] = useState([]);
   const [archivosAdjuntos, setArchivosAdjuntos] = useState({});
-  const [autorizado, setAutorizado] = useState(false);
 
   useEffect(() => {
     if (postulante?.documentos?.body) {
@@ -92,18 +92,44 @@ const Principal = ({ postulante }) => {
     }
   }, [postulante]);
 
-  const handleAdjuntar = (index) => {
-    setArchivosAdjuntos((prevState) => ({
-      ...prevState,
-      [index]: true, // Marca el documento como adjunto
-    }));
+  const handleAdjuntar = async (index, documentName) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".pdf,.jpg,.png,.docx"; // Extensiones permitidas
+
+    input.onchange = async (event) => {
+      const file = event.target.files[0];
+
+      if (file) {
+        try {
+          await FileService.saveFile(documentName, file);
+          setArchivosAdjuntos((prevState) => ({
+            ...prevState,
+            [index]: "success", // Éxito en la carga
+          }));
+        } catch (error) {
+          setArchivosAdjuntos((prevState) => ({
+            ...prevState,
+            [index]: "error", // Error en la carga
+          }));
+        }
+      }
+    };
+
+    input.click();
   };
+
+  // Verificar si todos los documentos están adjuntados correctamente
+  const isReadyToSend = documentos.length > 0 && 
+    documentos.every((_, index) => archivosAdjuntos[index] === "success");
 
   return (
     <div className="principal-container">
       {/* Mensaje de bienvenida */}
-      <h2 className="bienvenida">Bienvenido {postulante?.nombre || "Postulante"}, te invitamos a adjuntar todos los documentos requeridos para continuar con tu proceso dentro de la institución.</h2>
-      
+      <h2 className="bienvenida">
+        Bienvenido {postulante?.nombre || "Postulante"}, te invitamos a adjuntar todos los documentos requeridos para continuar con tu proceso dentro de la institución.
+      </h2>
+
       {/* Correo debajo del mensaje */}
       <p className="correo">{postulante?.correo || "No disponible"}</p>
 
@@ -111,17 +137,18 @@ const Principal = ({ postulante }) => {
       <div className="document-container">
         {documentos.length > 0 ? (
           documentos.map((doc, index) => (
-            <div key={index} className={`document-item ${archivosAdjuntos[index] ? "adjunto" : ""}`}>
+            <div key={index} className="document-item">
               <span className="document-name">{doc.nombreDocumento}</span>
-              
+
               <div className="boton-container">
-                <button className="upload-button" onClick={() => handleAdjuntar(index)}>
+                <button className="upload-button" onClick={() => handleAdjuntar(index, doc.nombreDocumento)}>
                   Adjuntar
                 </button>
-                
-                {archivosAdjuntos[index] && (
-                  <span className="check-icon">✔️</span>
-                )}
+
+                {/* Espacio para el icono de estado */}
+                <span className="status-icon">
+                  {archivosAdjuntos[index] === "success" ? "✔️" : archivosAdjuntos[index] === "error" ? "❌" : ""}
+                </span>
               </div>
             </div>
           ))
@@ -129,21 +156,16 @@ const Principal = ({ postulante }) => {
           <p>No hay documentos requeridos.</p>
         )}
       </div>
-      
-      {/* Checkbox de Autorización */}
-      <div className="checkbox-container">
-        <input
-          type="checkbox"
-          id="autorizacion"
-          checked={autorizado}
-          onChange={() => setAutorizado(!autorizado)}
-        />
-        <label htmlFor="autorizacion">
-          Autorizo el tratamiento de mis datos personales conforme a la ley de protección de datos.
-        </label>
+
+      {/* Botón enviar */}
+      <div className="enviar-container">
+        <button className="enviar-button" disabled={!isReadyToSend}>
+          Enviar
+        </button>
       </div>
     </div>
   );
 };
 
 export default Principal;
+
