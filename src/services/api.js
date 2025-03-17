@@ -2,6 +2,7 @@ import axios from "axios";
 
 const BASE_URL = "https://prod-14.brazilsouth.logic.azure.com/workflows/3dbf040bd4534cba8c4bf51330395b66/triggers/manual/paths/invoke/ObtenerPostulante";
 
+
 // Función para obtener datos del postulante desde Power Automate
 export const obtenerPostulante = async (id) => {
   try {
