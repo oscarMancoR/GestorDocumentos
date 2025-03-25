@@ -1,66 +1,30 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/principal.css";
+import { handleAdjuntar } from "../utiliti/handleAdjuntar"; // Importar la función
 
 const Principal = ({ postulante }) => {
+  //Estado para almacenar la lista de documentos requeridos
   const [documentos, setDocumentos] = useState([]);
+  //Estado para almacenar los archivos adjuntados
   const [archivosAdjuntos, setArchivosAdjuntos] = useState({});
+  //Estado para almacenar los archivos en formato Base64 antes de enviarlos
   const [archivosBase64, setArchivosBase64] = useState({});
 
+  //useEffect: Cuando cambia el postulante, cargamos sus documentos
   useEffect(() => {
+    
     if (postulante?.documentos) {
       console.log("Documentos recibidos:", postulante?.documentos);
       setDocumentos(postulante.documentos);
     }
   }, [postulante]);
-
-  const handleAdjuntar = async (index, documentName) => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".pdf,.jpg,.png,.docx"; // Extensiones permitidas
-  
-    input.onchange = async (event) => {
-      const file = event.target.files[0];
-  
-      if (file) {
-        const extension = file.name.split('.').pop(); // Obtener la extensión del archivo
-        const nombreConExtension = `${documentName}.${extension}`; // Agregar la extensión al nombre
-  
-        try {
-          const base64 = await toBase64(file);
-          setArchivosBase64((prevState) => ({
-            ...prevState,
-            [index]: { nombreDocumento: nombreConExtension, contenidoBase64: base64 }
-          }));
-  
-          setArchivosAdjuntos((prevState) => ({
-            ...prevState,
-            [index]: "success"
-          }));
-        } catch (error) {
-          setArchivosAdjuntos((prevState) => ({
-            ...prevState,
-            [index]: "error"
-          }));
-        }
-      }
-    };
-  
-    input.click();
-  };
-
-  const toBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result.split(",")[1]);
-      reader.onerror = (error) => reject(error);
-    });
-  };
-
+ 
+  //Función para enviar los documentos adjuntados a la API
   const handleEnviar = async () => {
     if (!postulante) return;
 
+    // 📌 Creamos el objeto con la información del postulante y sus documentos  
     const payload = {
       idPostulante: postulante.id || "ID_NO_DISPONIBLE",
       nombrePostulante: postulante.nombre || "NOMBRE_NO_DISPONIBLE",
@@ -68,6 +32,7 @@ const Principal = ({ postulante }) => {
     };
 
     try {
+      //Hacemos una petición POST a la API con los documentos adjuntos
       const response = await axios.post(
         "https://prod-03.brazilsouth.logic.azure.com:443/workflows/53bbfdc7e23b47aeb192e1953a293db4/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=NBENSTHDHtcxsIIEPMuDXraLnGjGq1yUy4ACGi6KdtM",
         payload,
@@ -80,10 +45,10 @@ const Principal = ({ postulante }) => {
       alert("Hubo un error al enviar los documentos.");
     }
   };
-
-  const isReadyToSend = documentos.length > 0 &&
-    documentos.every((_, index) => archivosAdjuntos[index] === "success");
-    
+     //Validamos si todos los documentos han sido adjuntados para habilitar el botón "Enviar" 
+     const isReadyToSend =
+     documentos.length > 0 &&
+     documentos.every((_, index) => archivosAdjuntos[index] === "success");
 
   return (
     
@@ -91,21 +56,27 @@ const Principal = ({ postulante }) => {
       <h2 className="bienvenida">
         Bienvenido {postulante?.nombre || "Postulante"}, te invitamos a adjuntar todos los documentos requeridos para continuar con tu proceso dentro de la institución.
       </h2>
-
+       {/*  Mostramos el correo del postulante */}
       <p className="correo">{postulante?.correo || "No disponible"}</p>
 
+       {/*  Sección para mostrar los documentos requeridos */}
       <div className="document-container">
         {documentos.length > 0 ? (
 
           documentos.map((doc, index) => (
           <div key={index} className="document-item">
+
+            {/* 📜 Mostramos el nombre del documento */}
            <span className="document-name">{doc}</span> {/* Antes era doc.nombreDocumento */}
 
            <div className="boton-container">
-           <button className="upload-button" onClick={() => handleAdjuntar(index, doc)}>
-            Adjuntar
+
+             {/*  Botón para adjuntar archivos */}
+           <button className="upload-button" onClick={() => handleAdjuntar(index, doc,setArchivosBase64,
+                      setArchivosAdjuntos)}>Adjuntar
            </button>
 
+                 {/*  Iconos de estado (Adjuntado o error) */}
               <span className="status-icon">
                 {archivosAdjuntos[index] === "success" ? "✅" : archivosAdjuntos[index] === "error" ? "❌" : ""}
               </span>
@@ -117,8 +88,13 @@ const Principal = ({ postulante }) => {
         )}
       </div>
 
+        {/*  Botón de envío (deshabilitado hasta que todos los documentos sean adjuntados) */}
       <div className="enviar-container">
-        <button className="enviar-button" disabled={!isReadyToSend} onClick={handleEnviar}>
+      <button
+          className="enviar-button"
+          disabled={!isReadyToSend}
+          onClick={handleEnviar}
+        >
           Enviar
         </button>
       </div>

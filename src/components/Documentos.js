@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+/*import React, { useState, useEffect } from "react";
 import "../styles/Documentos.css";
 
 const Documentos = () => {
@@ -29,5 +29,6 @@ const Documentos = () => {
         </div>
     );
 };
+///git sta
 
-export default Documentos;
+export default Documentos;*/
