@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { obtenerPostulante } from "./services/api";
-import Principal from "./pages/Principal";
+import Principal from "./Pages/Principal";
 import "./App.css";
 import Header from "./components/Header";
+import img1 from "./assets/img1.jpeg";
+import img2 from "./assets/img2.jpg";
+import img3 from "./assets/img3.jpg";
+
+const images = [img1, img2, img3];
 
 const App = () => {
   const [postulante, setPostulante] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     const fetchPostulante = async () => {
@@ -35,7 +41,25 @@ const App = () => {
     fetchPostulante();
   }, []);
 
-  if (loading) return <p>Cargando datos...</p>;
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 3000); // Cambia cada 3 segundos
+
+    return () => clearInterval(interval);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="spinner"></div>
+        <div className="image-slider">
+          <img src={images[currentImageIndex]} alt="Cargando..." className="full-screen-image" />
+        </div>
+      </div>
+    );
+  }
+  
   if (error) return <p>{error}</p>;
 
   return (

@@ -9,56 +9,75 @@ const Principal = ({ postulante }) => {
   const [archivosAdjuntos, setArchivosAdjuntos] = useState({});
   const [archivosBase64, setArchivosBase64] = useState({});
   const [esperandoRevision, setEsperandoRevision] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);  // 🔥 Estado de carga
+  const [isLoading, setIsLoading] = useState(true);
+  const [animarBoton, setAnimarBoton] = useState(false);
+  const [enviando, setEnviando] = useState(false); // Estado para mostrar el spinner
 
   useEffect(() => {
     const cargarDatos = async () => {
       if (!postulante) {
-        setIsLoading(false); // 🔥 Evita que la carga quede infinita si no hay postulante
+        setIsLoading(false);
         return;
       }
 
       try {
         console.log("🔄 Cargando datos para postulante:", postulante);
 
-        const datosCarpeta = await obtenerCarpetaPostulante(
-          postulante.nombre, 
-          postulante.id 
-        );
+        const datosCarpeta = await obtenerCarpetaPostulante(postulante.nombre, postulante.id);
+        console.log("📂 Datos de la carpeta:", datosCarpeta);
 
-        console.log("📂 Datos de la carpeta (JSON bruto):", datosCarpeta);
+        if (!datosCarpeta.existe) {
+          console.warn("La carpeta no existe. Mostrando todos los documentos.");
+          setEsperandoRevision(false);
+          setDocumentos(postulante.documentos.map((doc) => ({ nombre: doc, adjuntado: null })));
+          return;
+        }
 
-        // 🔍 Extraer nombres de archivos de "body" y quitar extensión
-        const archivosSinExtension = JSON.parse(datosCarpeta.archivos).body.map(
-          (archivo) => archivo.nombreArchivo.split(".")[0]
-        );
+        let archivosEnCarpeta = [];
+        if (datosCarpeta.archivos) {
+          try {
+            const parsedData = JSON.parse(datosCarpeta.archivos);
+            if (parsedData.body && Array.isArray(parsedData.body)) {
+              archivosEnCarpeta = parsedData.body.map((archivo) =>
+                archivo.nombreArchivo.split(".")[0]
+              );
+            }
+          } catch (error) {
+            console.error("❌ Error al parsear archivos de carpeta:", error);
+          }
+        }
 
-        console.log("📂 Documentos en carpeta sin extensión:", archivosSinExtension);
+        console.log("📂 Documentos en carpeta sin extensión:", archivosEnCarpeta);
 
-        //  Filtrar documentos NO adjuntados
         const documentosFaltantes = postulante.documentos.filter(
-          (doc) => !archivosSinExtension.includes(doc)
+          (doc) => !archivosEnCarpeta.includes(doc)
         );
 
-        console.log("📜 Documentos faltantes por adjuntar:", documentosFaltantes);
+        console.log("📜 Documentos faltantes:", documentosFaltantes);
 
-        // Si no hay documentos pendientes, activar el mensaje de revisión
         setEsperandoRevision(documentosFaltantes.length === 0);
-
-        // Guardar los documentos que faltan en el estado
         setDocumentos(documentosFaltantes.map((doc) => ({ nombre: doc, adjuntado: null })));
+        
       } catch (error) {
         console.error("❌ Error al cargar datos:", error);
+        alert("Hubo un error al cargar los datos. Intenta nuevamente.");
       } finally {
-        setIsLoading(false);  // 🔥 Finaliza la carga
+        setIsLoading(false);
       }
     };
 
     cargarDatos();
-  }, [postulante]); 
+  }, [postulante]);
 
   const handleEnviar = async () => {
     if (!postulante) return;
+
+    setEnviando(true); // Mostrar spinner
+    setAnimarBoton(true);
+
+    setTimeout(() => {
+      setAnimarBoton(false);
+    }, 500);
 
     const payload = {
       idPostulante: postulante.id,
@@ -67,6 +86,7 @@ const Principal = ({ postulante }) => {
     };
 
     try {
+      console.log("📤 Payload enviado:", JSON.stringify(payload, null, 2));
       const response = await axios.post(
         "https://prod-03.brazilsouth.logic.azure.com:443/workflows/53bbfdc7e23b47aeb192e1953a293db4/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=NBENSTHDHtcxsIIEPMuDXraLnGjGq1yUy4ACGi6KdtM",
         payload,
@@ -77,6 +97,8 @@ const Principal = ({ postulante }) => {
     } catch (error) {
       console.error("❌ Error al enviar:", error);
       alert("Hubo un error al enviar los documentos.");
+    } finally {
+      setEnviando(false); // Ocultar spinner
     }
   };
 
@@ -93,7 +115,7 @@ const Principal = ({ postulante }) => {
 
       <div className="document-container">
         {isLoading ? (
-          <p>⏳ Cargando documentos...</p>  // 🔥 Mensaje de carga
+          <p>⏳ Cargando documentos...</p>
         ) : esperandoRevision ? (
           <p>✅ Esperando por revisar datos.</p>
         ) : documentos.length > 0 ? (
@@ -101,7 +123,7 @@ const Principal = ({ postulante }) => {
             <div key={index} className="document-item">
               <span className="document-name">{doc.nombre}</span>
               <div className="boton-container">
-                <button className="upload-button" onClick={() => handleAdjuntar(index, doc, setArchivosBase64, setArchivosAdjuntos)}>
+                <button className="upload-button" onClick={() => handleAdjuntar(index, doc.nombre, setArchivosBase64, setArchivosAdjuntos)}>
                   Adjuntar
                 </button>
                 <span className="status-icon">
@@ -117,9 +139,19 @@ const Principal = ({ postulante }) => {
 
       {!isLoading && !esperandoRevision && (
         <div className="enviar-container">
-          <button className="enviar-button" disabled={!isReadyToSend} onClick={handleEnviar}>
+          <button 
+            className={`enviar-button ${animarBoton ? "boton-enviar-animado" : ""}`} 
+            disabled={!isReadyToSend || enviando} 
+            onClick={handleEnviar}
+          >
             Enviar
           </button>
+        </div>
+      )}
+
+      {enviando && (
+        <div className="overlay">
+          <div className="spinner"></div>
         </div>
       )}
     </div>
