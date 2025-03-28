@@ -6,7 +6,17 @@ export const handleAdjuntar = (index, documentName, setArchivosBase64, setArchiv
   input.onchange = async (event) => {
     const file = event.target.files[0];
 
-    if (file) {
+    if (file) {      
+  
+      //restringir el tamaño de archivo
+      const maxSize = 5 * 1024 * 1024; // 5 MB en bytes
+
+      if (file.size > maxSize) {
+        alert("El archivo es demasiado grande. Máximo permitido: 5 MB");
+        return;
+      }
+
+
       const extension = file.name.split(".").pop();
       const nombreConExtension = `${documentName}.${extension}`;
 

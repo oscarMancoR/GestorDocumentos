@@ -16,7 +16,7 @@ export const obtenerPostulante = async (id) => {
       },
     });
     console.log("🔍 este es la respuesta:", response);  
-    return response.data; // Retorna el objeto con id, nombre y correo
+    return response.data; // Retorna el objeto con id, nombre ,correo y documentos (nombre documento y si es requerido o no)
   } catch (error) {
     console.error("Error al obtener el postulante:", error);
     throw new Error("No se pudo obtener la información del postulante.");
