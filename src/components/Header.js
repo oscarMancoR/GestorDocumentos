@@ -1,7 +1,7 @@
 import React from "react";
 import "../styles/Header.css";
 import logo from "../assets/logo.png";
-import userPhoto from "../assets/userPhoto.jpeg";
+import userPhoto from "../assets/userPhoto.png";
 
 const Header = () => {
   return (

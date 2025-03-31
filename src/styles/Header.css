@@ -1,57 +1,90 @@
 .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #004080; /* Color institucional */
-    color: white;
-    padding: 10px 20px;
-    height: 130px; /* Altura fija del banner */
-    position: relative;
-  }
-  
-  .logo {
-    height: 100px; /* Mantiene el logo dentro del banner */
-    width: auto;
-  }
-  
-  .header-content {
-    display: flex;
-    align-items: center;
-  }
-  
-  .header-info {
-    display: flex;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #004080;
+  color: white;
+  padding: 10px 20px;
+  height: auto; /* Ajuste dinámico en lugar de altura fija */
+  width: 100%;
+  flex-wrap: nowrap;
+  overflow: hidden; /* Evita desbordamientos */
+}
+
+/* Logo */
+.logo {
+  height: 100px;
+  width: auto;
+}
+
+/* Contenido del header */
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Información del hospital */
+.header-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  line-height: 1.2;
+}
+
+.header-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.header-subtitle {
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Imagen de usuario */
+.header-photo {
+  height: 80px;
+  width: 80px;
+  border-radius: 80%;
+  object-fit: cover;
+  max-width: 100%;
+  margin-right: 50px; /* Asegura espacio alrededor para que no se corte */
+}
+
+/* Texto "Gestor Documental" */
+.header-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 30px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+/* Estilos responsivos para móviles */
+@media (max-width: 768px) {
+  .header {
     flex-direction: column;
-    text-align: left;
-    margin-left: 10px; /* Espacio entre el logo y el texto */
-    line-height: 1.2; /* Reduce el espacio vertical entre líneas */
+    height: auto; /* Permite que el tamaño se adapte */
+    padding: 15px;
+    text-align: center;
   }
-  
-  .header-title {
-    font-size: 18px;
-    font-weight: bold;
-    margin: 0; /* Elimina márgenes adicionales */
+
+  .header-content {
+    flex-direction: column;
+    text-align: center;
   }
-  
-  .header-subtitle {
-    font-size: 14px;
-    margin: 0; /* Elimina márgenes adicionales */
-  }
-  
-  .header-photo {
-    height: 100px; /* Tamaño de la foto */
-    width: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-  
-  
-  /* Estilos para "Gestor Documental" */
+
   .header-center {
-    position: absolute;
-    top:40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 30px;
-    font-weight: bold;
+    position: relative;
+    transform: none;
+    font-size: 24px;
+    margin-top: 10px;
   }
+
+  .header-photo {
+    margin: 10px auto; /* Centra la imagen y evita cortes */
+  }
+}

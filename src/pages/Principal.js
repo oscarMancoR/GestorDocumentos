@@ -180,14 +180,16 @@ const Principal = ({ postulante }) => {   //recibimos los documentos  que requie
     (documentosObligatorios.length > 0 && obligatoriosCompletos) ||  // Si hay obligatorios, deben estar completos
     (documentosObligatorios.length === 0 && documentosOpcionales.length > 0 && opcionalesCompletos); // Si no hay obligatorios, revisar opcionales
 
-    console.log("✅ ¿Listo para enviar?", isReadyToSend);
+   // console.log("✅ ¿Listo para enviar?", isReadyToSend);
 
 
 
   //para activar el button de enviar verifica que haya documentos pendientes de enviar, y que todos tengan datos adjuntos
   /*const isReadyToSend = documentos.length > 0 && 
     documentos.every((doc, index) => archivosAdjuntos[index] === "success"); */
-    console.log("📜 Documentos cargados:", documentos);
+   // console.log("📜 Documentos cargados:", documentos);
+
+   console.log(documentos);
 
   return (
     <div className="principal-container">
