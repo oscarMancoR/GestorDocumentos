@@ -1,3 +1,4 @@
+/* 🔵 Estilos generales (para pantallas grandes) */
 .header {
   display: flex;
   align-items: center;
@@ -5,26 +6,23 @@
   background-color: #004080;
   color: white;
   padding: 10px 20px;
-  height: auto; /* Ajuste dinámico en lugar de altura fija */
+  height: 130px;
   width: 100%;
   flex-wrap: nowrap;
-  overflow: hidden; /* Evita desbordamientos */
+  box-sizing: border-box;
 }
 
-/* Logo */
 .logo {
   height: 100px;
   width: auto;
 }
 
-/* Contenido del header */
 .header-content {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-/* Información del hospital */
 .header-info {
   display: flex;
   flex-direction: column;
@@ -33,58 +31,120 @@
 }
 
 .header-title {
-  font-size: 18px;
+  font-size: 24px;
   font-weight: bold;
   margin: 0;
 }
 
 .header-subtitle {
-  font-size: 14px;
+  font-size: 16px;
   margin: 0;
 }
 
-/* Imagen de usuario */
 .header-photo {
   height: 80px;
   width: 80px;
-  border-radius: 80%;
+  border-radius: 50%;
   object-fit: cover;
-  max-width: 100%;
-  margin-right: 50px; /* Asegura espacio alrededor para que no se corte */
 }
 
-/* Texto "Gestor Documental" */
 .header-center {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 30px;
+  font-size: 25px;
   font-weight: bold;
   white-space: nowrap;
 }
 
-/* Estilos responsivos para móviles */
-@media (max-width: 768px) {
+/* 🟠 Ajustes para pantallas medianas (tabletas, menos de 1024px) */
+@media (max-width: 1300px) {
   .header {
-    flex-direction: column;
-    height: auto; /* Permite que el tamaño se adapte */
-    padding: 15px;
-    text-align: center;
+    height: 110px;
+    padding: 8px 15px;
   }
 
-  .header-content {
-    flex-direction: column;
-    text-align: center;
+  .logo {
+    height: 40px;
   }
 
-  .header-center {
-    position: relative;
-    transform: none;
-    font-size: 24px;
-    margin-top: 10px;
+  .header-title {
+    font-size: 12px;
+  }
+
+  .header-subtitle {
+    font-size: 10px;
   }
 
   .header-photo {
-    margin: 10px auto; /* Centra la imagen y evita cortes */
+    height: 70px;
+    width: 70px;
+  }
+
+  .header-center {
+    font-size: 18px;
+  }
+}
+
+/* 🔹 Ajustes para pantallas pequeñas */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    height: auto;
+    padding: 15px;
+    text-align: center;
+    width: 100vw; /* Asegura que el header cubra todo el ancho */
+    position: relative; /* Permite que "Gestor Documental" se posicione dentro */
+  }
+
+  /* 🔹 Corregir "Gestor Documental" para que se quede arriba y centrado */
+  .header-center {
+    position: absolute;
+    top: 5px; /* Lo subimos arriba */
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 22px;
+    font-weight: bold;
+    width: 100%;
+    text-align: center;
+    white-space: nowrap; /* Evita que se corte el texto */
+    z-index: 10; /* Se asegura de que esté encima del resto */
+  }
+
+  /* 🔹 Organizar el logo y la información del hospital en FILA */
+  .header-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 40px; /* Baja el logo para dejar espacio arriba */
+  }
+
+  /* 🔹 Ajustar tamaño del logo */
+  .logo {
+    height: 60px;
+    width: auto;
+  }
+
+  /* 🔹 Asegurar que la información del hospital esté alineada correctamente */
+  .header-info {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 🔹 Ajustar tamaño de los textos */
+  .header-title {
+    font-size: 12px;
+  }
+
+  .header-subtitle {
+    font-size: 10px;
+  }
+
+  /* 🔹 Ocultar foto en móviles */
+  .header-photo {
+    display: none;
   }
 }
